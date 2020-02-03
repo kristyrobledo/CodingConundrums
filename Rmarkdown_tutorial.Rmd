@@ -1,0 +1,112 @@
+---
+title: "How to use Rmarkdown"
+author: "Kristy Robledo"
+date: "30/01/2020"
+output: 
+    html_document:
+      toc: yes
+      number_sections: true
+      toc_float: true
+      theme: cerulean
+      highlight: tango
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# YAY! R markdown!
+
+Today we are going to create an Rmarkdown document together. And guess what.... I'm writing this from within an Rmarkdown document :)
+
+Rmarkdown is a way to create **neat** and **reproducible** reports. Whether its from analyses performed within R, or analyses performed in another software package, you can use Rmarkdown to create your report. 
+
+# What is Rmarkdown??
+
+Rmarkdown is using `Markdown syntax`. This is relatively simple syntax to use to create a document with images, tables, links, headers, footers etc that is reproducible and also easy to read. I've even written a manuscript in Rmarkdown and presentations but you can also write your thesis, a book, website - and the list goes on! 
+
+## Example workflow to include Rmarkdown
+
+Here is an example workflow of how it may work for you:
+
+- perform all analyses within SAS. 
+- analysis outputs are then saved as sas datasets (or csv datasets etc)
+- Rmarkdown report creates a report based upon these datasets
+
+It is also simple to have analysis and graphics code within your Rmarkdown report, which means everything for your report is in one document.
+
+## Example workflow within Rmarkdown
+
+- write some text or code within the Rmarkdown document
+- knit the document
+- check your produced report!
+
+What freqently happens is once we have written a report, we receive a data update. Or need to perform additional work, or perhaps its a reoccuring monthly report..... 
+
+By using Rmarkdown, once a report is "written" the first time, you then **knit** it to create the output file (html, word, pdf). So if the data is updated, as you have "coded" your report, you only need to reknit your report. Magic!
+
+
+# Getting started
+
+- install Rstudio and R
+- install the Rmarkdown package by running the following code in Rstudio
+
+```{r eval=FALSE}
+install.packages("rmarkdown")
+library(rmarkdown)
+
+##if you want to write to PDFs:
+install.packages("tinytex")
+tinytex::install_tinytex()  # install TinyTeX
+```
+
+Now we are ready to get started!
+
+Go to `File`>`New File`>`Rmarkdown`
+
+Enter a filename, author and choose `word` to start with. Output files can always be changed later. 
+
+The file will come with a bit of a pre-populated example. To look at what happens, click the **Knit** button. 
+
+## Formatting 
+
+Rather than reproducing the wheel, [checkout this cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) to look at formatting options in Rmarkdown (headings, bold text, italics, lists etc etc). 
+
+
+## Code chunks
+
+One of the perks of Rmarkdown is the inclusion of Code chunks like in the example. The best way to use the code chunks for reporting is to have the "ECHO='FALSE'" setting used. This means your code is not "Echoed" into your document - rather it is hidden, and just outputs are given. Like the example in your given in the initial document where the plot code for pressure is "hidden", but the plot is shown.
+
+>**Handy hint** 
+>
+>You can create a new code chunk at any time by using ctrl+alt+i!
+>
+>See Tools > Keyboard shortcuts help in Rstudio for more!
+
+
+## Global options
+
+Global options for code chunks can be setup, and are typically done in the first code chunk for the document - see the example. This code chunk has also been "named" (Setup) which makes problem solving easier. But remember - code chunk names must be unique!
+
+# Next steps
+
+- write a little report (usage will increase knowledge)
+- problems? 
+   - google
+   - come to coding conundrums with your issue 
+   
+## More advanced packages to use with Rmarkdown
+
+- `bookdown` = stitching multiple Rmarkdowns into a 'book' (eg long report, thesis)
+- `posterdown` = creating a poster
+- `xaringan` = be a presentation ninja
+- `flexboard` = creating a html dashboard
+- be `shiny` with a `shinyapp` [examples here](https://shiny.rstudio.com/gallery/)
+
+## More information
+
+- [Rmarkdown book](https://bookdown.org/yihui/rmarkdown/) by creater Yihui Xie
+- Rmarkdown cheatsheet (see `Help`>`Cheatsheets`>`R markdown cheatsheet` or `R markdown definitive guide`)
+- look on github for others code to 'borrow'
+- stack overflow (google your query and follow it down the rabbithole!)
+
