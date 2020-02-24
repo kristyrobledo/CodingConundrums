@@ -1,7 +1,7 @@
 ---
 title: "How to use Rmarkdown"
 author: "Kristy Robledo"
-date: "30/01/2020"
+date: "13/02/2020"
 output: 
     html_document:
       toc: yes
@@ -23,17 +23,17 @@ Rmarkdown is a way to create **neat** and **reproducible** reports. Whether its 
 
 # What is Rmarkdown??
 
-Rmarkdown is using `Markdown syntax`. This is relatively simple syntax to use to create a document with images, tables, links, headers, footers etc that is reproducible and also easy to read. I've even written a manuscript in Rmarkdown and presentations but you can also write your thesis, a book, website - and the list goes on! 
+Rmarkdown is using `Markdown syntax`. This is relatively simple syntax to use to create a document with images, tables, links, headers, footers etc that is reproducible and also easy to read. I've even written a manuscript in Rmarkdown, a poster, presentations - even a website! You can also write your thesis, a book - and the list goes on! 
 
 ## Example workflow to include Rmarkdown
 
-Here is an example workflow of how it may work for you:
+Here is an example workflow of how it may work for you with analyses in other software:
 
 - perform all analyses within SAS. 
 - analysis outputs are then saved as sas datasets (or csv datasets etc)
 - Rmarkdown report creates a report based upon these datasets
 
-It is also simple to have analysis and graphics code within your Rmarkdown report, which means everything for your report is in one document.
+or perhaps you are efficient in R and then all analyses and graphics code etc are written within your Rmarkdown report! This means everything for your report is in one document.
 
 ## Example workflow within Rmarkdown
 
@@ -43,7 +43,7 @@ It is also simple to have analysis and graphics code within your Rmarkdown repor
 
 What freqently happens is once we have written a report, we receive a data update. Or need to perform additional work, or perhaps its a reoccuring monthly report..... 
 
-By using Rmarkdown, once a report is "written" the first time, you then **knit** it to create the output file (html, word, pdf). So if the data is updated, as you have "coded" your report, you only need to reknit your report. Magic!
+By using Rmarkdown, once a report is "written" the first time, you then **knit** it to create the output file (html, word, pdf). So if the data is updated, as you have "coded" your report, you only need to reknit your report to reproduce everything based on the updated data. Magic!
 
 
 # Getting started
@@ -70,8 +70,7 @@ The file will come with a bit of a pre-populated example. To look at what happen
 
 ## Formatting 
 
-Rather than reproducing the wheel, [checkout this cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) to look at formatting options in Rmarkdown (headings, bold text, italics, lists etc etc). 
-
+Rather than reproducing the wheel, [checkout this cheatsheet](https://github.com/rstudio/cheatsheets/raw/master/rmarkdown-2.0.pdf) to look at formatting options in Rmarkdown. Briefly: 
 
 ## Code chunks
 
@@ -79,7 +78,7 @@ One of the perks of Rmarkdown is the inclusion of Code chunks like in the exampl
 
 >**Handy hint** 
 >
->You can create a new code chunk at any time by using ctrl+alt+i!
+>You can create a new code chunk at any time by using ctrl+alt+i
 >
 >See Tools > Keyboard shortcuts help in Rstudio for more!
 
