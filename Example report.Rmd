@@ -30,8 +30,7 @@ This is an R Markdown document. Markdown is a simple formatting syntax for autho
 *italics*
 
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this. 
-
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document.
 ```{r, }
 df<-read_sas("table1.sas7bdat")
 #glimpse(df)
@@ -41,9 +40,11 @@ df %>%
   kable(col.names = c("", "Placebo", "Testosterone"), caption = "This is table one by treatment")
 ```
 
+ You can embed an R code **inline** like this. `r df$grpPlacebo[1]` is the number of patients in the placebo group.  
+
 ## Create a figure 
 
-```{r, fig.cap="Sepal lengtth by width by species"}
+```{r, fig.cap="Sepal length by width, grouped by species"}
 data("iris")
 d<-iris
 #glimpse(d)
@@ -54,7 +55,7 @@ ggplot(aes(x=Sepal.Width, Sepal.Length, color=Species)) +geom_point() +
 ```
 
 ```{r thisismyname, }
-include_graphics()
+#include_graphics()
 
 ```
 
