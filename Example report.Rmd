@@ -1,0 +1,62 @@
+---
+title: "Example report"
+author: "Kristy Robledo"
+date: "27/02/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(tidyverse)
+library(haven)
+library(knitr)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+[link](http://rmarkdown.rstudio.com)
+
+- write 
+- lists
+- of things
+
+1. number 
+1. your 
+1. lists
+
+**bold**
+
+*italics*
+
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this. 
+
+```{r, }
+df<-read_sas("table1.sas7bdat")
+#glimpse(df)
+
+df %>%
+  select(text, grpPlacebo, grpTestosterone) %>%
+  kable(col.names = c("", "Placebo", "Testosterone"), caption = "This is table one by treatment")
+```
+
+## Create a figure 
+
+```{r, fig.cap="Sepal lengtth by width by species"}
+data("iris")
+d<-iris
+#glimpse(d)
+
+d %>%
+ggplot(aes(x=Sepal.Width, Sepal.Length, color=Species)) +geom_point() +
+  labs(x="Sepal Width (mm)", y="Sepal Length (mm)")
+```
+
+```{r thisismyname, }
+include_graphics()
+
+```
+
+
+
