@@ -37,7 +37,10 @@ km<-ggsurvplot(fit, data=lung,
            legend.title=" ",
            conf.int = TRUE,
            risk.table.col="strata",
-           risk.table.height=0.2)
+           risk.table.height=0.2,
+           tables.theme = theme_cleantable())
+
+
 
 ## logrank test
 survdiff(Surv(time, status) ~sex , data=lung)
