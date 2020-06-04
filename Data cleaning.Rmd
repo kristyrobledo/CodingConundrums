@@ -1,0 +1,187 @@
+---
+title: "Data cleaning"
+author: "Kristy Robledo"
+date: "04/06/2020"
+output: word_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(janitor)
+library(haven)
+library(ViewPipeSteps)
+library(readxl)
+library(ggbeeswarm)
+```
+
+## Read in data
+
+```{r}
+trt<-read_sas("T:\\ECHO\\Clean\\trt.sas7bdat") %>%
+  clean_names() %>%
+  remove_constant()
+
+glimpse(trt)
+```
+
+## Patients summmary
+
+```{r, echo=TRUE}
+
+trt %>%
+  tabyl(subjectkey) ->pids
+
+nrow(pids)
+min(pids$n)
+max(pids$n)
+
+pids %>%
+  ggplot(aes(x=subjectkey, y=n))  +
+  geom_bar(stat = "identity")
+```
+
+## Drugs
+
+Types of drugs
+
+```{r}
+trt %>%
+  tabyl(exttreat)
+```
+
+Patients with no drug name
+
+```{r}
+trt %>%
+  filter(is.na(exttreat)) %>%
+  select(subjectkey, exttreat, extfdat)
+```
+
+
+## Dates
+
+Find missing dates
+
+```{r}
+trt %>%
+  filter(is.na(extfdat)) %>%
+  select(subjectkey, exttreat, extfdat)
+```
+
+Plot dates to check 
+
+```{r}
+trt %>%
+  ggplot(aes(x=subjectkey, y=extfdat)) +
+  geom_point()
+```
+
+## Doses
+
+Find missing doses
+
+```{r}
+trt %>%
+  filter(is.na(extdose)) %>%
+  select(subjectkey, exttreat, extdose)
+
+```
+
+Summarise doses by drug type
+
+```{r}
+trt %>%
+  filter(is.na(extdose)==FALSE) %>%
+  group_by(exttreat) %>%
+  summarise(n=n(), 
+            mean(extdose), 
+            median=median(extdose),
+            min=min(extdose), 
+            max=max(extdose))
+```
+
+Plot with a bit of noise - I prefer beeswarm to jitter!
+
+```{r}
+trt %>%
+  ggplot(aes(x=exttreat, y=extdose, colour=factor(exttreat))) +
+  geom_point()+
+  geom_quasirandom()
+
+trt %>%
+  ggplot(aes(x=exttreat, y=extdose, colour=factor(exttreat))) +
+  geom_point()+
+  geom_jitter()
+
+```
+
+## long
+
+Make your data 'longer'
+
+```{r}
+trt %>%
+  select(exttreat, extdose) %>%
+  pivot_longer(everything(), names_to="column", values_to="data") ->long
+```
+
+
+## wide
+
+This also performs a function at the same time!
+
+```{r}
+trt %>%
+  select(subjectkey, exttreat, extdose) %>%
+  pivot_wider(names_from = exttreat, 
+              values_from = extdose, 
+              names_prefix="drug",
+              values_fn=mean) ->meandoses
+```
+
+
+## Recode factors levels
+
+```{r}
+glimpse(trt)
+
+trt %>%
+  mutate(drug = recode(exttreat, `1`="Drugname", `2`="Drugname2")) -> newtrt
+
+newtrt %>%
+  tabyl(drug, exttreat)
+
+```
+
+Change continous to categorical
+
+```{r}
+
+
+trt %>%
+  mutate(catdose = ifelse(extdose>=100,"High", "Low")) ->catdat
+
+```
+
+
+## Change case of character variable
+
+`toupper` and `tolower` functions
+
+```{r}
+trt %>%
+  mutate(newreason = toupper(extdelro)) ->uppercase
+```
+
+
+
+
+## Excel error on read in of dataset
+
+```{r}
+
+df<-read_xlsx("Y:\\Statistics\\Kristy\\for tony\\Laima\\Data\\PAVANI CADMS 20171031.xlsx", sheet = "FinalData")
+
+```
+
