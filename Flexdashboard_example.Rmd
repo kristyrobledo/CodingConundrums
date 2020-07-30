@@ -1,0 +1,106 @@
+---
+title: "ACED trial (Created: `r format(Sys.time(), '%d %B, %Y')`))"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(tidyverse)
+library(glue)
+library(haven)
+library(janitor)
+library(flextable)
+library(DT)
+##list of all folders/files in directory
+#allfiles<-list.dirs(path = "T:/", full.names = TRUE, recursive = TRUE)
+
+## get a list of the "Clean" locations
+# as_tibble(allfiles) %>%
+#   filter(str_detect(value, 'Clean')) %>%
+#   filter(!str_detect(value, "_Documentation"))->clean
+# 
+# rand.file<-vector()
+# for (i in 1:nrow(clean)){
+#   list.files(path=glue( clean[i,1, drop=TRUE])) %>%
+#     as_tibble %>%
+#     filter(str_detect(value, 'rand|enrol')) ->rand.file[i]
+# }
+
+
+rand<-read_sas("T://ACED/Clean/rand.sas7bdat") %>%
+  clean_names()
+
+
+```
+
+SUMMARY
+=======================================================================
+
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+### Number of patients 
+
+```{r}
+rand %>%
+  tally() ->patients
+
+gauge(patients$n, 
+      min = 0, 
+      max = 100, 
+      symbol = ' ', 
+      gaugeSectors(
+        success = c(0, 30), 
+        warning = c(30, 70), 
+        danger = c(70, 100)),
+      abbreviate = FALSE
+)
+
+```
+
+
+### Recruitment
+
+```{r}
+
+rand %>%
+  arrange(svrandat) %>%
+  mutate(n = row_number()) %>%
+  ggplot(aes(x=svrandat, y=n)) +
+  geom_line() +
+  theme_minimal()
+
+```
+
+
+Column {data-width=350}
+-----------------------------------------------------------------------
+
+
+### Patients per site
+
+```{r}
+rand %>%
+  tabyl(studyoid) %>%
+  flextable()
+```
+
+
+RAND DATA
+=======================================================================
+
+
+Column {data-width=1000}
+-----------------------------------------------------------------------
+
+### Data table
+
+```{r}
+DT::datatable(data.frame(rand))%>%
+  DT::formatDate(c('iecfsc','svrandat'),method="toLocaleDateString")
+                 
+
+```
