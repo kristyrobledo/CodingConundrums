@@ -96,11 +96,12 @@ RAND DATA
 Column {data-width=1000}
 -----------------------------------------------------------------------
 
-### Data table
+### Data table (iris dataset at example)
 
 ```{r}
-DT::datatable(data.frame(rand))%>%
-  DT::formatDate(c('iecfsc','svrandat'),method="toLocaleDateString")
+data("iris")
+DT::datatable(iris) 
+
                  
 
 ```
