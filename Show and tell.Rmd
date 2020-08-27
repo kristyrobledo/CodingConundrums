@@ -1,0 +1,111 @@
+---
+title: "Show and tell"
+author: "Kristy Robledo"
+date: "27/08/2020"
+output: html_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Table One (Malcolm)
+
+
+```{r, eval=FALSE}
+library(Gmisc)
+?getDescriptionStatsBy
+```
+
+more information here on how to create tables like this:
+https://www.ahajournals.org/doi/full/10.1161/CIRCIMAGING.115.003643
+
+http://gforge.se/2014/01/fast-track-publishing-using-knitr-part-iv/
+https://cran.r-project.org/web/packages/Gmisc/vignettes/Descriptives.html
+
+Other useful table one packages are:
+
+```{r, eval=FALSE}
+
+library(Publish)
+?utable
+
+library(tableone)
+?tableone
+
+library(papaja)
+?apa_table
+
+
+```
+
+
+# knitr::spin() function  (Mason)
+
+https://bookdown.org/yihui/rmarkdown-cookbook/spin.html
+
+Basically take an R script and turn into a .rmd 'magically' - and can even use Roxygen code to translate in the script to Rmd. 
+eg. #+ is a header
+
+
+```{r, eval=FALSE}
+knitr::spin("script.R",knit=FALSE) 
+```
+
+Knit=FALSE means it gives the Rmd file.
+
+# creating template code in R (Sol)
+
+For each variable, creates a line of code with the variable name and type:
+
+```{r, eval=FALSE}
+for (i in 1:nrow(infant_variable_list) ){
+  cat(noquote(paste0("dataset_mod <- dataset_mod %>% mutate( ", infant_variable_list$variables[i], " = dataset$", infant_variable_list$variables[i], " %>% ", infant_variable_list_category$category[i]  ,") \n" )))
+}
+
+```
+
+Sol also brought up regular expressions! Something I often forget about. see more here: https://www.rexegg.com/regex-quickstart.html
+
+
+# Using broom to create tidy outputs (Kristy)
+
+first some data prep:
+
+```{r}
+library(tidyverse)
+library(broom)
+library(flextable)
+
+data(iris)
+
+##create an outcome
+df <-iris %>%
+  mutate(outcome = case_when(Petal.Width>2 ~1,
+                             TRUE ~0))
+```
+
+Then we run a model: 
+
+```{r}
+model<-glm(outcome ~ Sepal.Length+Sepal.Width, data=df,
+            family = binomial(link="logit"))
+```
+
+and normally would create output like this:
+
+```{r}
+summary(model)
+```
+
+But, we can `tidy` this output, and exponeniate it, get the 95% CI and put it in a nice table really easily:
+
+```{r}
+broom::tidy(model, exponentiate=TRUE, conf.int=TRUE) %>%
+  flextable::flextable() %>%
+  flextable::colformat_num(digits=3)
+```
+
+
+
