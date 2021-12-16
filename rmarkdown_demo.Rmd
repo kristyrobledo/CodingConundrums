@@ -1,0 +1,81 @@
+---
+title: "Statistical report for penguin trial"
+author: "Kristy Robledo"
+date: "16/12/2021"
+output: 
+    bookdown::word_document2:
+      toc: true
+    bookdown::pdf_document2:
+      toc: true
+    bookdown::html_document2:
+      toc: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, warning = FALSE)
+library(tidyverse)
+library(gtsummary)
+library(flextable)
+library(palmerpenguins)
+
+#use janitor package and clean_names function for excel!
+```
+
+# Statistical report
+
+This is a trial about penguins. **yay**
+
+We are aiming to 
+
+- show
+- lots
+- of 
+- things
+- in 
+- rmarkdown
+
+
+
+## Baseline characteristics
+
+The baseline characteristics are in Table \@ref(tab:base). Also see Figure \@ref(fig:flipper)
+
+```{r base, tab.cap="Baseline characteristics of penguin types", }
+
+penguins %>%
+  tbl_summary(by = species) %>%
+  as_flex_table()
+
+```
+
+
+
+```{r flipper, fig.cap="Flipper length by bill length"}
+penguins %>%
+  ggplot(aes(x=flipper_length_mm, y=bill_length_mm, colour=species)) +
+  geom_point()
+```
+
+# Resources
+
+[Bookdown](https://bookdown.org/yihui/bookdown/)
+
+
+## Reproducibility 
+
+Analyses and summaries produced in this report were carried out using the R statistical environment, version `r paste(version$major, version$minor, sep=",")`. The report itself was produced using an Rmarkdown workflow, located here: `r knitr::current_input(dir = TRUE)``. The following table lists the non-base R packages used in analyzing and building this report.  
+
+
+```{r tab.cap = "R packages used in analyses and reporting"}
+sessioninfo::package_info() %>%
+  unclass() %>%
+  as_tibble() %>%
+  filter(attached==TRUE) %>%
+  select(package, ondiskversion, date) %>%
+  rename(version=ondiskversion) %>%
+  flextable() %>%
+  autofit()
+  
+```
+
+
