@@ -1,0 +1,205 @@
+---
+date: "`r Sys.Date()`"
+author: "Kristy Robledo"
+title: "Kaplan Meier session in CC"
+output: 
+  officedown::rdocx_document:
+    mapstyles:
+      Normal: ['First Paragraph']
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.cap = TRUE)
+library(officedown)
+library(officer)
+
+fp <- fp_par(
+  text.align = "center", 
+  padding.bottom = 20, padding.top = 120, 
+  border.bottom = fp_border())
+
+ft <- fp_text(shading.color='#EFEFEF', bold = TRUE)
+
+library(tidyverse)
+library(survminer)
+library(survival)
+library(patchwork)
+library(Cairo)
+library(gtsummary)
+library(flextable)
+library(glue)
+```
+
+
+\newpage
+
+`r fp`
+
+## Table of content
+
+<!---BLOCK_TOC--->
+
+## List of figures
+
+<!---BLOCK_TOC{seq_id: 'fig'}--->
+
+## List of tables
+
+<!---BLOCK_TOC{seq_id: 'tab'}--->
+
+
+\newpage
+
+# KM plot
+
+Summary of data:
+
+```{r}
+glimpse(lung)
+
+table(lung$status)
+```
+KM curve:
+
+```{r, fig.cap="Kaplan Meier curve by gender", fig.dim=c(9,6)}
+
+lung %>%
+  mutate(months = time/30.4, 
+         dead = case_when(
+           status==2 ~ 1, 
+           TRUE ~ 0)) ->lung2
+
+m1<-survfit(Surv(months, dead) ~ sex, data=lung2)
+
+ggsurvplot(m1, 
+           data=lung2, 
+           legend.labs = c("Males", "Females"), 
+           break.time.by = 12/2, 
+           risk.table = TRUE, 
+           risk.table.height= 0.2, 
+           tables.theme = theme_cleantable(), 
+           legend="none", 
+           palette = c("red", "darkblue"), 
+           conf.int = TRUE
+           )
+
+p1<-ggsurvplot(m1, 
+           data=lung2, 
+           legend.labs = c("Males", "Females"), 
+           break.time.by = 12/2, 
+           risk.table = TRUE, 
+           risk.table.height= 0.2, 
+           tables.theme = theme_cleantable(), 
+           legend="none", 
+           palette = c("red", "darkblue"))
+
+```
+
+
+
+# output plot into pdf for submission
+
+```{r, eval=FALSE}
+p1<-ggsurvplot(m1, 
+           data=lung2, 
+           legend.labs = c("Males", "Females"), 
+           break.time.by = 12/2, 
+           risk.table = TRUE, 
+           risk.table.height= 0.2, 
+           tables.theme = theme_cleantable(), 
+           legend="none", 
+           palette = c("red", "darkblue")
+           )
+
+p2<-ggsurvplot(m1, 
+           data=lung2, 
+           legend.labs = c("Males", "Females"), 
+           break.time.by = 12/2, 
+           risk.table = TRUE, 
+           risk.table.height= 0.2, 
+           tables.theme = theme_cleantable(), 
+           legend="none", 
+           palette = c("red", "black")
+           )
+
+plots<-list()
+
+plots[[1]]<-p1
+plots[[2]]<-p2
+
+p<-ggarrange(plot, print=TRUE, ncol=1, risk.table.height=0.3)
+
+ggsave(plot=p, "Fig1.pdf")
+```
+
+
+# output plot into pptx for presentation
+
+```{r, eval=FALSE}
+
+tum_graph <- rvg::dml(code = print(p1, newpage = FALSE))
+
+
+doc <- read_pptx()
+doc <- add_slide(doc, layout = "Title and Content", master = "Office Theme")
+doc <- ph_with(doc, tum_graph, location = ph_location(width = 8, height=6) )
+
+print(doc, target = "plots in pp.pptx")
+
+
+```
+
+
+
+# logrank test
+
+```{r}
+survdiff(Surv(months, dead) ~ sex, data=lung2)
+
+```
+
+new reproducible publication ready:
+
+```{r}
+tbl_survfit(m1, 
+            times=c(6, 12)) %>%
+  add_p() %>%
+  add_nevent() %>%
+  add_n() %>%
+  as_flex_table() %>%
+  set_caption(caption = "Survival probabilities at 6 and 12 months")
+
+
+tbl_survfit(m1, 
+            probs=c(0.5))
+```
+
+
+
+# cox regression
+
+```{r}
+ph<-summary(coxph(Surv(months, dead)~sex, data=lung2))
+
+HR<-round(ph$coefficients[2], digits=2)
+HRl<-round(ph$conf.int[3], digits=2)
+HRu<-round(ph$conf.int[4], digits=2)
+p<-signif(ph$waldtest[3], digits=1)
+
+stats<-glue('HR = {HR} (95% CI: {HRl}-{HRu}), p-value={p}')
+
+```
+
+
+# stick information on the curve
+
+```{r}
+p1$plot +
+  annotate("text", 
+           x=12, y= 0.9, 
+           hjust=0, 
+           label=stats) 
+  
+```
+
+
