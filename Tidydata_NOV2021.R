@@ -43,7 +43,8 @@ penguins %>%
             ci = qt(0.975, df=n-1)*sd/sqrt(n)) ->overtime.summ
 
 labs<-c(bill_length_mm="Bill length",
-        flipper_length_mm = "Flipper length")
+        flipper_length_mm = "Flipper length",
+        bill_depth_mm = "Bill depth")
 
 overtime.summ %>%
   ggplot(aes(y= mean, x=as.factor(year), colour=species)) +
