@@ -1,0 +1,68 @@
+---
+title: "Presentation"
+subtitle: "⚔<br/>with xaringan"
+author: "Yihui Xie"
+institute: "RStudio, PBC"
+date: "2016/12/12 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+## Penguins dataset
+
+```{r, message=F,echo=FALSE}
+
+library(tidyverse)
+library(gtsummary)
+library(palmerpenguins)
+library(DT)
+
+datatable(penguins)
+```
+
+---
+class: middle
+
+# Summary of data by species
+
+```{r, echo=F}
+
+penguins %>%
+  tbl_summary(by=species,
+              type = all_continuous() ~ "continuous2",
+              statistic = all_continuous() ~ c("{median} ({p25}, {p75})", "{min}, {max}"),
+              missing="no")
+
+```
+
+---
+
+```{r, message=F, echo=F}
+penguins %>%
+  ggplot(aes(x=bill_length_mm, y=bill_depth_mm))+
+  geom_point()+
+  geom_smooth(method="lm")+
+  theme_minimal()
+```
+
+-- 
+testing text
+---
+
+class: middle, center
+
+- test 
+
+--
+
+- adding more
+
+--
+
+- and more
+
