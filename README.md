@@ -16,4 +16,4 @@
 - Ninja presentation; July 22 (NinjaTemplateJuly22.Rmd+html and ExamplePresentationJuly22.Rmd+html)
 - Writing functions; Aug22 (Sol and mason writing a function.R)
 - Purrring like a cat; Feb 23 (purrr_FEB23.R)
-- Getting the band back together, Rmarkdown (stats_report_MAR23.rmd and )
+- Getting the band back together, Rmarkdown (stats_report_MAR23.rmd and Example-statistical-report.docx and template.docx)
