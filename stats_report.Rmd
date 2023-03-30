@@ -1,0 +1,211 @@
+---
+date: "Last compiled on `r format(Sys.time(), '%d %B, %Y')`"
+author: "Kristy Robledo"
+title: "Statistical Report for the EXAMPLE trial"
+output: 
+  officedown::rdocx_document:
+    reference_docx: template.docx 
+    page_margins:
+      bottom: 1
+      top: 1
+      right: 1
+      left: 1
+      header: 0.5
+      footer: 0.5
+      gutter: 0
+
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_file = paste0("EXAMPLE-statistical-report-", Sys.Date(),".docx")) })
+---
+
+```{r setup, include=FALSE}
+## setup chunk
+
+knitr::opts_chunk$set(echo = FALSE, fig.cap = TRUE)
+
+##read in packages for reporting
+library(officedown)
+library(officer)
+library(flextable)
+library(sessioninfo)
+
+## read in packages for analyses
+library(tidyverse)
+library(gtsummary)
+library(ggsurvfit)
+
+####  formatting helpers  ###################################################################
+
+
+fp <- fp_par(                                         ##underline
+  text.align = "center", 
+  padding.bottom = 20, padding.top = 120, 
+  border.bottom = fp_border())
+
+ft <- fp_text(shading.color='#EFEFEF', bold = TRUE)   ##format text
+
+ft_title <- fp_text(font.size=16,                     ##format a title not in TC
+                    font.family = "Calibri",
+                    shading.color = "transparent", 
+                    bold = TRUE)       
+
+
+whitespace <- fp_par(                                 ##create whitespace
+  text.align = "center", 
+  padding = 30, 
+)
+
+set_flextable_defaults(font.family = "Calibri", 
+                       font.size = 9, 
+                       padding=2, 
+                       table.layout = "autofit"
+                      )
+
+theme_gtsummary_journal(journal = "jama")
+
+####  load data  ###############################################################
+
+
+#install.packages("ipcwswitch")
+library(ipcwswitch)
+data("SHIdat")
+
+#glimpse(SHIdat)
+
+#### derive datasets ##########################################################
+SHIdat %>%
+  mutate(days = case_when(progStatus==1 ~ progDate-as.Date("1jan2012", "%d%b%Y"), 
+                          progStatus==0~ as.Date("1jan2016", "%d%b%Y")-as.Date("1jan2012", "%d%b%Y")) ) ->survdf
+
+
+```
+
+
+\newpage
+
+`r ftext("Table of contents", ft_title)` 
+
+<!---BLOCK_TOC--->
+
+## List of figures
+
+<!---BLOCK_TOC{seq_id: 'fig'}--->
+
+## List of tables
+
+<!---BLOCK_TOC{seq_id: 'tab'}--->
+
+
+\newpage
+
+# Formatting in Rmarkdown
+
+check out the cheatsheets under help>cheatsheets
+
+# Baseline
+
+Check out [this presentation](http://www.danieldsjoberg.com/gtsummary-weill-cornell-presentation), or one of my previous sessions about gtsummary and its fantastic functions. 
+
+```{r, tab.id = "base", tab.cap = "Baseline characteristics by treatment"}
+SHIdat %>%
+  select(agerand, bras.f, sex.f, tt_Lnum, pathway.f) %>%
+  tbl_summary(by = bras.f, 
+              label = list(agerand ~ "Age at randomisation in years"),  ##add nicer names
+              statistic = list(agerand ~ "{mean} ({sd})",               ##change which stats are shown
+                               tt_Lnum ~ "{median} ({min}-{max})"), ) %>%
+  add_overall() ->t1  ##add overall column
+
+t1 %>%
+  as_flex_table()    ##output as flextable so it comes out nicely. If you dont go this, you will just get a warning that they have automatically applied flextable to your table
+```
+
+
+
+\newpage
+
+# Cox regression analysis
+
+Method: cox regression for the effect of treatment. 
+
+We plan to adjust for 
+
+- list1
+- list2
+
+```{r, tab.id = "cox", tab.cap = "COx regression analysis for PFS"}
+coxph(Surv(days, progStatus)~bras.f + agerand, data=survdf) %>% ##run your model
+  tbl_regression(exponentiate = TRUE) %>%                       ##format nicely
+  as_flex_table()
+
+```
+
+
+
+# Kaplan-Meier curves
+<!---BLOCK_LANDSCAPE_START--->
+```{r, fig.cap="PFS by treatment", fig.dim=c(10,5.5)}
+
+br<-seq(0, 365*5, by=365)
+
+survdf %>%
+  survfit2(Surv(days, progStatus) ~ bras.f, .) %>%
+  ggsurvfit() +
+  labs(x= "Years from randomisation", 
+       y="PFS") +
+  add_risktable() +
+  scale_ggsurvfit(x_scales = list(breaks = br, 
+                                  labels = round(br/365, 2)))
+
+```
+<!---BLOCK_LANDSCAPE_STOP--->
+
+
+## Survival at time t (or find time for probability p eg. median survival)
+
+```{r, tab.id="tblsurv", tab.cap="Survival table"}
+
+survdf %>%
+survfit2(Surv(days, progStatus) ~ bras.f, .) %>% 
+  tbl_survfit(times=c(365,365*2),
+              label_header = "**{time} days**") %>%
+  as_flex_table()
+```
+
+`r whitespace`
+
+
+# Crossreferencing 
+
+Take a look at Table \@ref(tab:base) for baseline and Table \@ref(tab:cox) for the regression. 
+
+
+# Inline reporting
+
+There are a total of `r nrow(SHIdat)` participants enrolled in this trial. 
+The average age is `r mean(SHIdat$agerand, na.rm=TRUE)`. Obviously you would also want to round this number....
+
+Or we can use gtsummary helper "inline_text" function if you have saved the table. For example, the mean age is `r inline_text(t1, variable = agerand, column='stat_0')` years. 
+
+
+# AE tables
+
+- look to `gtreg` package and `tbl_reg`. Presentation and [examples here](https://shannonpileggi.github.io/gtreg/)
+
+
+\newpage
+
+# Reproducibility receipt
+
+Analyses and summaries produced in this report were carried out using the R statistical environment, version `r paste(version$major, version$minor, sep=".")`. The report itself was produced using an Rmarkdown workflow, located here: `r knitr::current_input(dir = TRUE)``. The following table lists the non-base R packages used in analyzing and building this report.  
+
+
+```{r, tab.cap = "R packages used in analyses and reporting"}
+sessioninfo::package_info() %>%
+  unclass() %>%
+  as_tibble() %>%
+  filter(attached==TRUE) %>%
+  select(package, ondiskversion, date) %>%
+  rename(version=ondiskversion) %>%
+  flextable()
+  
+```
+
