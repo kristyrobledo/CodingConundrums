@@ -18,3 +18,4 @@
 - Getting the band back together, Rmarkdown (stats_report_MAR23.rmd and Example-statistical-report.docx and template.docx)
 - Labeling columns and modelling visualization tools, April 23 (labelling_viz_tools_apr23.R)
 - Exploring missing data in Naniar (naniar_JUN23.R)
+- Performing MI using MICE (mice_Jul23.R)
